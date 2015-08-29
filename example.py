@@ -1,4 +1,5 @@
 import re
+import functools
 
 
 class Position(object):
@@ -54,6 +55,14 @@ def position_tile(grid, tile, position):
 
 ws_regex = re.compile(r'\s{1,}')
 bracket_regex = re.compile(r'\((\d+,\d+,(?:N|S|E|W))\)')
+action_regex = re.compile(r'\((\d+,\d+)\)((?:M|L|R){1,})?')
+
+
+def no_whitespace(fn):
+    @functools.wraps(fn)
+    def inner(st):
+        return fn(ws_regex.sub('', st))
+    return inner
 
 
 def str_to_pos_args(x):
@@ -61,7 +70,17 @@ def str_to_pos_args(x):
     return map(int, tmp_[:2]) + tmp_[2:]
 
 
+@no_whitespace
 def get_ship_placements(s):
-    s = ws_regex.sub('', s)
     m = bracket_regex.findall(s)
     return [make_ship(x) for x in m]
+
+
+@no_whitespace
+def get_ship_action(s):
+    m = action_regex.match(s)
+    if not m:
+        return {}
+    target, movements = m.groups()
+    pos = Position(*map(int, target.split(',')))
+    return {'position': pos, 'action': 'shot' if movements is None else 'movement'}

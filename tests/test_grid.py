@@ -49,3 +49,13 @@ def test_ship_placement(position_string, tile_count):
     from example import get_ship_placements
     output = get_ship_placements(position_string)
     assert len(output) == tile_count
+
+
+@pytest.mark.parametrize(("action_string", "action_kind"), [
+    (u'(0, 0) MRMLMM', u'movement'),
+    (u'(9, 2)', u'shot'),
+])
+def test_ship_action(action_string, action_kind):
+    from example import get_ship_action
+    result = get_ship_action(action_string)
+    assert action_kind == result['action']
