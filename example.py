@@ -169,3 +169,49 @@ def final_standings(grid):
                     ' SUNK' if tile.sunk else '']
             retval.append('({}, {}, {}){}'.format(*args))
     return '\n'.join(retval[::-1])
+
+
+def main(inputfile, outputfile):
+    with open(inputfile) as fo:
+        lines = fo.readlines()
+
+    gridsize = int(lines.pop(0))
+    ship_positions = get_ship_placements(lines.pop(0))
+
+    grid = make_grid(gridsize, gridsize)
+
+    # a tile we can use to overwrite any moved tiles
+    blank_tile = Empty(Position(0, 0))
+
+    for ship in ship_positions:
+        grid = position_tile(grid, ship, ship.position)
+    for line in lines:
+        action = get_ship_action(line)
+        ship = get_tile_from_grid(grid, action['position'])
+        changes = get_coords_from_movements(action['movements'],
+                                            direction=ship.direction)
+
+        if action['action'] == 'shot':
+            shoot_at_ship(ship, action['position'])
+        else:
+            final_position = reduce(add_tuples,
+                                    changes,
+                                    ship.position_tuple)
+            grid = position_tile(grid, ship, Position(*final_position))
+            grid = position_tile(grid, blank_tile, action['position'])
+
+    final = final_standings(grid)
+    if outputfile == '-':
+        print(final)
+    else:
+        with open(outputfile, 'w') as fo:
+            fo.write(final)
+
+def usage(progname):
+    return u'Usage: {} inputfile outputfile'.format(progname)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        sys.exit(usage(sys.argv[0]))
+    main(*sys.argv[1:3])
