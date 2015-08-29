@@ -39,9 +39,13 @@ def test_cannot_position_tile_beyond_grid(position, x, y):
     assert grid[y][x] == tile
 
 
-def test_ship_placement():
+@pytest.mark.parametrize(("position_string", "tile_count"), [
+    (u'(10, 10, S) (0,0, W)', 2),
+    (u'(10, 10, S) (0,0, W) (0,0, W) (0,0, W) (0,0, W)', 5),
+    (u'', 0),
+    (u'(10, 10, SW) (-10, 0, W)', 0),
+])
+def test_ship_placement(position_string, tile_count):
     from example import get_ship_placements
-    input_ = u'(0, 0, N) (12, 4, W)'
-    output = get_ship_placements(input_)
-    assert len(output) == 3
-
+    output = get_ship_placements(position_string)
+    assert len(output) == tile_count
