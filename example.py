@@ -199,7 +199,8 @@ def run(inputfile, outputfile):
                                     changes,
                                     ship.position_tuple)
             grid = position_tile(grid, ship, Position(*final_position))
-            grid = position_tile(grid, blank_tile, action['position'])
+            if final_position != action['position'].as_tuple:
+                grid = position_tile(grid, blank_tile, action['position'])
 
     final = final_standings(grid)
     if outputfile == '-':
