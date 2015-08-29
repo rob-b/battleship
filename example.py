@@ -2,6 +2,7 @@
 
 import re
 import sys
+import os.path
 import operator
 import functools
 from pprint import pprint
@@ -171,7 +172,7 @@ def final_standings(grid):
     return '\n'.join(retval[::-1])
 
 
-def main(inputfile, outputfile):
+def run(inputfile, outputfile):
     with open(inputfile) as fo:
         lines = fo.readlines()
 
@@ -208,10 +209,14 @@ def main(inputfile, outputfile):
             fo.write(final)
 
 def usage(progname):
-    return u'Usage: {} inputfile outputfile'.format(progname)
+    return u'Usage: {} inputfile outputfile'.format(os.path.basename(progname))
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit(usage(sys.argv[0]))
+    run(*sys.argv[1:3])
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        sys.exit(usage(sys.argv[0]))
-    main(*sys.argv[1:3])
+    main()

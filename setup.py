@@ -11,6 +11,8 @@ setup(
     py_modules=['example'],
     include_package_data=True,
     zip_safe=False,
-    classifiers=[
-    ]
+    entry_points="""\
+    [console_scripts]
+    thoughtmachine = example:main
+    """,
 )
